@@ -3,9 +3,26 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define BABYBLUE (Color){35, 78, 128, 255}
 #define num 100
+
+void SaveConfig(const char *directory,const char *info, int number)
+{
+        chdir(directory);
+
+    FILE *fp = fopen("chartFile.txt", "a");
+
+    fprintf(fp,
+        "%s=%d\n",
+        info,
+        number
+    );
+
+    fclose(fp);
+}
 
 bool ExtractNumber(const char *input, float *result)
 {
@@ -75,7 +92,9 @@ int main() {
         Rectangle start_button = {800, 450, 320, 100};
         Rectangle chart_button = {600, 450, 320, 100};
         Rectangle spreadsheet_button = {1000, 450, 320, 100};
-        Rectangle save = {800, 790, 320, 100 };
+        Rectangle save = {500, 790, 320, 100};
+        Rectangle save_data = {970, 790, 320, 100};
+        Rectangle back = {1360, 790, 320, 100};
 
         Rectangle res1 = {300, 1000, 300, num1};
         Rectangle res2 = {600, 1000, 300, num2};
@@ -93,6 +112,9 @@ int main() {
         bool spreadsheet = false;
         bool start = false;
         bool result_chart = false;
+        bool chart_save = false;
+        bool _back = false;
+
         bool int1 = false;
         bool int2 = false;
         bool int3 = false;
@@ -107,6 +129,8 @@ int main() {
                 bool hovering_chart = CheckCollisionPointRec(mouse, chart_button);
                 bool hovering_spreadsheet = CheckCollisionPointRec(mouse, spreadsheet_button);
                 bool _save = CheckCollisionPointRec(mouse, save);
+                bool _data_save_chart = CheckCollisionPointRec(mouse, save_data);
+                bool go_back = CheckCollisionPointRec(mouse, back);
 
                 bool hovering_input1 = CheckCollisionPointRec(mouse, input1);
                 bool hovering_input2 = CheckCollisionPointRec(mouse, input2);
@@ -125,6 +149,26 @@ int main() {
                         }
                         else if(start && hovering_spreadsheet) {
                                 spreadsheet = true;
+                        }
+                        else if (chart && go_back) {
+                                chart = false;
+                                _back = true;
+                        }
+                        else if(chart && _data_save_chart) {
+                                ExtractNumber(info1, &num1);
+                                ExtractNumber(info2, &num2);
+                                ExtractNumber(info3, &num3);
+                                ExtractNumber(info4, &num4);
+                                ExtractNumber(info5, &num5);
+
+                                SaveConfig("downloads", info1, num1);
+                                SaveConfig("downloads", info2, num2);
+                                SaveConfig("downloads", info3, num3);
+                                SaveConfig("downloads", info4, num4);
+                                SaveConfig("downloads", info5, num5);
+
+                                result_chart = true;
+                                int1 = int2 = int3 = int4 = int5 = false;
                         }
                         else if (chart && _save) {
                                 result_chart = true;
@@ -262,11 +306,19 @@ int main() {
                         DrawText(info3, input3.x + 12, input3.y + 10, 30, DARKBLUE);
                         DrawText(info4, input4.x + 12, input4.y + 10, 30, DARKBLUE);
                         DrawText(info5, input5.x + 12, input5.y + 10, 30, DARKBLUE);
+
+                        DrawRectangleRec(back, go_back ? SKYBLUE : LIGHTGRAY);
+                        DrawText("Back", back.x + 120, back.y + 35, 35, DARKBLUE);
+
+                        DrawRectangleRec(save_data, _data_save_chart ? SKYBLUE : LIGHTGRAY);
+                        DrawText("Save", save_data.x + 120, save_data.y + 35, 35, DARKBLUE);
+
                         DrawRectangleRec(save, _save ? SKYBLUE : LIGHTGRAY);
-                        DrawText("Display", 920, save.y + 35, 35, DARKBLUE);
+                        DrawText("Display", save.x + 120, save.y + 35, 35, DARKBLUE);
                 }
                 EndDrawing();
         }
         UnloadTexture(banner);
+        CloseWindow();
         return 0;
 }
