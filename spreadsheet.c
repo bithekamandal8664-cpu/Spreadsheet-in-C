@@ -403,6 +403,7 @@ int main() {
                 EndDrawing();
         }
         UnloadTexture(banner);
+        UnloadFont(PFont);
         CloseWindow();
         return 0;
 }
