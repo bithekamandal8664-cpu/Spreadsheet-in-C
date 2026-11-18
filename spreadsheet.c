@@ -8,6 +8,12 @@
 
 #define BABYBLUE (Color){35, 78, 128, 255}
 #define num 100
+#define ROW 10
+#define COLS 10
+#define CELL_X 350
+#define CELL_Y 250
+#define CELL_W 100
+#define CELL_H 55
 #define DrawPText(text, x, y, size, color) \
     DrawTextEx(PFont, text, (Vector2){x, y}, size, 1, color)
 
@@ -109,6 +115,18 @@ void InputText(char *buffer, int max_len)
 }
 
 int main() {
+        typedef struct {
+                float value;
+                int row;
+                int column;
+        } Cell;
+
+        Cell cells[ROW][COLS];
+        char cellInput[50] = "";
+        int selectedCol = -1;
+        int selectedRow = -1;
+        bool editing = false;
+
         char info1[num] = "";
         char info2[num] = "";
         char info3[num] = "";
@@ -163,6 +181,14 @@ int main() {
         bool int4 = false;
         bool int5 = false;
 
+        for (int r = 0; r < ROW; r++) {
+                for (int c = 0; c < COLS; c++) {
+                        cells[r][c].value = 0;
+                        cells[r][c].row = r;
+                        cells[r][c].column = c;
+                }
+        }
+
         while(!WindowShouldClose()) {
 
                 Vector2 mouse = GetMousePosition();
@@ -176,6 +202,7 @@ int main() {
                 bool go_back = CheckCollisionPointRec(mouse, back);
                 bool go_back_start = CheckCollisionPointRec(mouse, back1);
 
+                bool hovering_grid = CheckCollisionPointRec(mouse, (Rectangle){CELL_X, CELL_Y, COLS * CELL_W, ROW * CELL_H});
                 bool hovering_input1 = CheckCollisionPointRec(mouse, input1);
                 bool hovering_input2 = CheckCollisionPointRec(mouse, input2);
                 bool hovering_input3 = CheckCollisionPointRec(mouse, input3);
@@ -196,6 +223,11 @@ int main() {
                         }
                         else if(start && hovering_spreadsheet) {
                                 spreadsheet = true;
+                        }
+                        if (spreadsheet && hovering_grid) {
+                                selectedCol = (mouse.x - CELL_X) / CELL_W;
+                                selectedRow = (mouse.y - CELL_Y) / CELL_H;
+                                editing = true;
                         }
                         else if (chart && go_back) {
                                 chart = false;
@@ -274,6 +306,9 @@ int main() {
                                 }
                         }
                 }
+                if (spreadsheet && editing) {
+                        InputText(cellInput, sizeof(cellInput));
+                }
                 if (chart) {
                         if(int1) {
                                 InputText(info1, num);
@@ -324,6 +359,34 @@ int main() {
                         DrawPText("chart", chart_button.x + 115, 487, 45, BLACK);
                         DrawPText("spreadsheet", spreadsheet_button.x + 60, 487, 45, BLACK);
                         DrawPText("Back", back1.x + 120, back1.y + 35, 45, BLACK);
+                }
+                else if (spreadsheet) {
+
+                        DrawPText("My Spreadsheet", CELL_X, 150, 40, BABYBLUE);
+
+                        for (int r = 0; r < ROW; r++) {
+                                for (int c = 0; c < COLS; c++) {
+
+                                        Rectangle cell = {
+                                                CELL_X + c * CELL_W,
+                                                CELL_Y + r * CELL_H,
+                                                CELL_W,
+                                                CELL_H
+                                        };
+
+                                        bool selected = (r == selectedRow && c == selectedCol);
+
+                                        DrawRectangleRec(cell, selected ? SKYBLUE : RAYWHITE);
+
+                                        DrawRectangleLinesEx(cell, 1, GRAY);
+                                        if (selected && editing) {
+                                                DrawPText(cellInput, cell.x + 8, cell.y + 15, 22, DARKBLUE);
+                                        }
+                                        else {
+                                                DrawPText(TextFormat("%.2f", cells[r][c].value), cell.x + 8, cell.y + 15, 22, DARKBLUE);
+                                        }
+                                }
+                        }
                 }
 
                 else if (result_chart) {
@@ -403,7 +466,6 @@ int main() {
                 EndDrawing();
         }
         UnloadTexture(banner);
-        UnloadFont(PFont);
         CloseWindow();
         return 0;
 }
