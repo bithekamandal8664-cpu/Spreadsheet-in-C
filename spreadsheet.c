@@ -8,12 +8,6 @@
 
 #define BABYBLUE (Color){35, 78, 128, 255}
 #define num 100
-#define ROW 10
-#define COLS 10
-#define CELL_X 350
-#define CELL_Y 250
-#define CELL_W 100
-#define CELL_H 55
 #define DrawPText(text, x, y, size, color) \
     DrawTextEx(PFont, text, (Vector2){x, y}, size, 1, color)
 
@@ -115,23 +109,13 @@ void InputText(char *buffer, int max_len)
 }
 
 int main() {
-        typedef struct {
-                float value;
-                int row;
-                int column;
-        } Cell;
-
-        Cell cells[ROW][COLS];
-        char cellInput[50] = "";
-        int selectedCol = -1;
-        int selectedRow = -1;
-        bool editing = false;
-
         char info1[num] = "";
         char info2[num] = "";
         char info3[num] = "";
         char info4[num] = "";
         char info5[num] = "";
+        char cellInput[num] = "";
+
         float num1 = 0;
         float num2 = 0;
         float num3 = 0;
@@ -161,6 +145,61 @@ int main() {
         Rectangle res4 = {1200, 1000, 240, num4};
         Rectangle res5 = {1500, 1000, 240, num5};
 
+        Rectangle grid[10][10];
+
+        int i = 0;
+        while (i < 10) {
+                grid[0][i] = (Rectangle){100 + i * 200, 100, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[1][i] = (Rectangle){100 + i * 200, grid[0][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[2][i] = (Rectangle){100 + i * 200, grid[1][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[3][i] = (Rectangle){100 + i * 200, grid[2][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[4][i] = (Rectangle){100 + i * 200, grid[3][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while(i < 10) {
+                grid[5][i] = (Rectangle){100 + i * 200, grid[4][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while(i < 10) {
+                grid[6][i] = (Rectangle){100 + i * 200, grid[5][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[7][i] = (Rectangle){100 + i * 200, grid[6][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[8][i] = (Rectangle){100 + i * 200, grid[7][0].y + 60, 200, 60};
+                i++;
+        }
+        i = 0;
+        while (i < 10) {
+                grid[9][i] = (Rectangle){100 + i * 200, grid[8][0].y + 60, 200, 60};
+                i++;
+        }
+        int selectedRow = -1;
+        int selectedCol = -1;
+
         Rectangle input1 = {520, 320, 700, 50};
         Rectangle input2 = {520, 410, 700, 50};
         Rectangle input3 = {520, 500, 700, 50};
@@ -174,20 +213,13 @@ int main() {
         bool chart_save = false;
         bool _back = false;
         bool _load = false;
+        bool edit = false;
 
         bool int1 = false;
         bool int2 = false;
         bool int3 = false;
         bool int4 = false;
         bool int5 = false;
-
-        for (int r = 0; r < ROW; r++) {
-                for (int c = 0; c < COLS; c++) {
-                        cells[r][c].value = 0;
-                        cells[r][c].row = r;
-                        cells[r][c].column = c;
-                }
-        }
 
         while(!WindowShouldClose()) {
 
@@ -202,7 +234,100 @@ int main() {
                 bool go_back = CheckCollisionPointRec(mouse, back);
                 bool go_back_start = CheckCollisionPointRec(mouse, back1);
 
-                bool hovering_grid = CheckCollisionPointRec(mouse, (Rectangle){CELL_X, CELL_Y, COLS * CELL_W, ROW * CELL_H});
+                bool hovering_cell = false;
+                int hoveredRow = -1;
+                int hoveredCol = -1;
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[0][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 0;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[1][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 1;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[2][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 2;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[3][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 3;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[4][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 4;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[5][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 5;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[6][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 6;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[7][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 7;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[8][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 8;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+                i = 0;
+                while (i < 10) {
+                        if (CheckCollisionPointRec(mouse, grid[9][i])) {
+                                hovering_cell = true;
+                                hoveredRow = 9;
+                                hoveredCol = i;
+                        }
+                        i++;
+                }
+
                 bool hovering_input1 = CheckCollisionPointRec(mouse, input1);
                 bool hovering_input2 = CheckCollisionPointRec(mouse, input2);
                 bool hovering_input3 = CheckCollisionPointRec(mouse, input3);
@@ -224,10 +349,11 @@ int main() {
                         else if(start && hovering_spreadsheet) {
                                 spreadsheet = true;
                         }
-                        if (spreadsheet && hovering_grid) {
-                                selectedCol = (mouse.x - CELL_X) / CELL_W;
-                                selectedRow = (mouse.y - CELL_Y) / CELL_H;
-                                editing = true;
+                        if (spreadsheet && hovering_cell) {
+                                edit = true;
+                                selectedRow = hoveredRow;
+                                selectedCol = hoveredCol;
+                                cellInput[0] = '\0';
                         }
                         else if (chart && go_back) {
                                 chart = false;
@@ -306,7 +432,7 @@ int main() {
                                 }
                         }
                 }
-                if (spreadsheet && editing) {
+                if (spreadsheet && edit) {
                         InputText(cellInput, sizeof(cellInput));
                 }
                 if (chart) {
@@ -362,28 +488,15 @@ int main() {
                 }
                 else if (spreadsheet) {
 
-                        DrawPText("My Spreadsheet", CELL_X, 150, 40, BABYBLUE);
+                        DrawPText("My Spreadsheet", 200, 150, 40, BABYBLUE);
 
-                        for (int r = 0; r < ROW; r++) {
-                                for (int c = 0; c < COLS; c++) {
-
-                                        Rectangle cell = {
-                                                CELL_X + c * CELL_W,
-                                                CELL_Y + r * CELL_H,
-                                                CELL_W,
-                                                CELL_H
-                                        };
-
+                        for (int r = 0; r < 10; r++) {
+                                for (int c = 0; c < 10; c++) {
+                                        DrawRectangleRec(grid[r][c], WHITE);
                                         bool selected = (r == selectedRow && c == selectedCol);
-
-                                        DrawRectangleRec(cell, selected ? SKYBLUE : RAYWHITE);
-
-                                        DrawRectangleLinesEx(cell, 1, GRAY);
-                                        if (selected && editing) {
-                                                DrawPText(cellInput, cell.x + 8, cell.y + 15, 22, DARKBLUE);
-                                        }
-                                        else {
-                                                DrawPText(TextFormat("%.2f", cells[r][c].value), cell.x + 8, cell.y + 15, 22, DARKBLUE);
+                                        DrawRectangleLinesEx(grid[r][c], selected ? 3.0f : 1.0f, selected ? BABYBLUE : GRAY);
+                                        if (selected && edit) {
+                                                DrawPText(TextFormat("%s_", cellInput), grid[r][c].x + 8, grid[r][c].y + 15, 22, DARKBLUE);
                                         }
                                 }
                         }
