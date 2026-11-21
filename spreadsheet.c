@@ -114,7 +114,7 @@ int main() {
         char info3[num] = "";
         char info4[num] = "";
         char info5[num] = "";
-        char cellInput[num] = "";
+        char cellInput[10][10][num] = {{{0}}};
 
         float num1 = 0;
         float num2 = 0;
@@ -353,7 +353,6 @@ int main() {
                                 edit = true;
                                 selectedRow = hoveredRow;
                                 selectedCol = hoveredCol;
-                                cellInput[0] = '\0';
                         }
                         else if (chart && go_back) {
                                 chart = false;
@@ -432,8 +431,8 @@ int main() {
                                 }
                         }
                 }
-                if (spreadsheet && edit) {
-                        InputText(cellInput, sizeof(cellInput));
+                if (spreadsheet && edit && selectedRow >= 0 && selectedCol >= 0) {
+                        InputText(cellInput[selectedRow][selectedCol], num);
                 }
                 if (chart) {
                         if(int1) {
@@ -495,8 +494,9 @@ int main() {
                                         DrawRectangleRec(grid[r][c], WHITE);
                                         bool selected = (r == selectedRow && c == selectedCol);
                                         DrawRectangleLinesEx(grid[r][c], selected ? 3.0f : 1.0f, selected ? BABYBLUE : GRAY);
+                                        DrawPText(cellInput[r][c], grid[r][c].x + 8, grid[r][c].y + 15, 22, DARKBLUE);
                                         if (selected && edit) {
-                                                DrawPText(TextFormat("%s_", cellInput), grid[r][c].x + 8, grid[r][c].y + 15, 22, DARKBLUE);
+                                                DrawPText("_", grid[r][c].x + 8 + MeasureText(cellInput[r][c], 22), grid[r][c].y + 15, 22, DARKBLUE);
                                         }
                                 }
                         }
