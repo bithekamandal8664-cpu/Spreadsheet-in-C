@@ -1,3 +1,4 @@
+
 #include <raylib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -197,6 +198,9 @@ int main() {
                 grid[9][i] = (Rectangle){100 + i * 200, grid[8][0].y + 60, 200, 60};
                 i++;
         }
+
+        Rectangle Back_spread = {300, grid[9][0].y + 120, 320, 100};
+
         int selectedRow = -1;
         int selectedCol = -1;
 
@@ -214,6 +218,7 @@ int main() {
         bool _back = false;
         bool _load = false;
         bool edit = false;
+        bool _back_spread = false;
 
         bool int1 = false;
         bool int2 = false;
@@ -233,6 +238,7 @@ int main() {
                 bool _data_load_chart = CheckCollisionPointRec(mouse, load);
                 bool go_back = CheckCollisionPointRec(mouse, back);
                 bool go_back_start = CheckCollisionPointRec(mouse, back1);
+                bool go_back_spread = CheckCollisionPointRec(mouse, Back_spread);
 
                 bool hovering_cell = false;
                 int hoveredRow = -1;
@@ -357,6 +363,10 @@ int main() {
                         else if (chart && go_back) {
                                 chart = false;
                                 _back = true;
+                        }
+                        else if(spreadsheet && go_back_spread) {
+                                spreadsheet = false;
+                                _back_spread = true;
                         }
                         else if(chart && _data_save_chart) {
                                 ExtractNumber(info1, &num1);
@@ -487,7 +497,7 @@ int main() {
                 }
                 else if (spreadsheet) {
 
-                        DrawPText("My Spreadsheet", 200, 150, 40, BABYBLUE);
+                        DrawPText("My Spreadsheet", 200, 50, 40, BABYBLUE);
 
                         for (int r = 0; r < 10; r++) {
                                 for (int c = 0; c < 10; c++) {
@@ -500,6 +510,8 @@ int main() {
                                         }
                                 }
                         }
+                        DrawRectangleRec(Back_spread, go_back_spread ? SKYBLUE : LIGHTGRAY);
+                        DrawPText("Back", Back_spread.x + 120, Back_spread.y + 35, 45, BLACK);
                 }
 
                 else if (result_chart) {
